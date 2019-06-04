@@ -3,8 +3,12 @@ const btoa = require('btoa');
 const axios = require('axios');
 const querystring = require('querystring');
 
-const ACCESS_TOKEN = 'FdvL5MqofP7eNnkInRmyffaQU';
-const ACCESS_TOKEN_SECRET = 'TD8FOQgKsyWypsmINevu0Lz7x5FUZKsKblyYBYAhUKvzTopo81';
+const ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN;
+const ACCESS_TOKEN_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET;
+
+console.log('ACCESS_TOKEN in twitterPull is: ', ACCESS_TOKEN);
+console.log('ACCESS_TOKEN_SECRET in twitterPull is: ', ACCESS_TOKEN_SECRET);
+// console.log('process.env in twitterPull is: ', process.env);
 
 const tokenEncoded = encodeURIComponent(ACCESS_TOKEN);
 const secretEncoded = encodeURIComponent(ACCESS_TOKEN_SECRET);
