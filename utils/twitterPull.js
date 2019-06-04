@@ -5,10 +5,8 @@ const querystring = require('querystring');
 
 const ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN;
 const ACCESS_TOKEN_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET;
+const API_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&tweet_mode=extended&count=100';
 
-console.log('ACCESS_TOKEN in twitterPull is: ', ACCESS_TOKEN);
-console.log('ACCESS_TOKEN_SECRET in twitterPull is: ', ACCESS_TOKEN_SECRET);
-// console.log('process.env in twitterPull is: ', process.env);
 
 const tokenEncoded = encodeURIComponent(ACCESS_TOKEN);
 const secretEncoded = encodeURIComponent(ACCESS_TOKEN_SECRET);
@@ -31,41 +29,41 @@ const grantTypeCC = querystring.stringify({
     grant_type: 'client_credentials'
   });
 
-const twitterPull = () => api.post('/oauth2/token', grantTypeCC, defaultOptions)
-    .then(response => response.data)
-    .then(token => {
-        console.log(`${token.token_type} token received`);
-        console.log(`the token is ::: ${token.access_token}`);
-        //api.defaults.headers.common['Authorization'] = `bearer ${token.access_token}`;
-        // const apiAuthorized = axios.create({ header: { Authorization: `Bearer ${token.access_token}` }});
-        //https://api.twitter.com/1.1/statuses/user_timeline.json?count=100&screen_name=realDonaldTrump
-        const API_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&tweet_mode=extended&count=100';
-        api.get(API_URL, { headers: { Authorization: `Bearer ${token.access_token}`}})
-            .then(response => response.data)
-            .then(tweets => {
-                console.log('tweets receied from Axios in twitterPull: ', Object.keys(tweets).length )
-                tweets.forEach(tweet => {
-                    console.log(`
-                        - Tweet data -
-                        id: ${tweet.id}
-                        id_str: ${tweet.id_str}
-                        created_at: ${tweet.created_at}
-                        tweet_message: ${tweet.full_text}
-                    `)
-                    
-                    Tweet.findOrCreate({ where: { id: tweet.id}, defaults: {
-                        id_str: tweet.id_str,
-                        created_at: tweet.created_at,
-                        tweet_message: tweet.full_text }
-                    })
-                        .then( ()=> console.log('tweet added'))
-                        .catch(err => console.log(err))
-                });
-            })
-            .catch(err => console.log(`
-                error: ${err.message}
 
-            `));
+const authTwitter = () => api.post('/oauth2/token', grantTypeCC, defaultOptions)
+    .then(response => response.data)
+    .then(token => 
+        {
+            console.log('Setting Auth Token');
+            api.defaults.headers.common['Authorization'] = `bearer ${token.access_token}`;
+            console.log(`Setting Auth Token Complete`);
+        })
+    .catch(err => console.log(`
+        error: ${err.message}
+
+    `))
+
+const twitterPull = () => api.get(API_URL)
+    .then(response => response.data)
+    .then(tweets => {
+        console.log('tweets receied from Axios in twitterPull: ', Object.keys(tweets).length )
+        tweets.forEach(tweet => {
+            // console.log(`
+            //     - Tweet data -
+            //     id: ${tweet.id}
+            //     id_str: ${tweet.id_str}
+            //     created_at: ${tweet.created_at}
+            //     tweet_message: ${tweet.full_text}
+            // `)
+            
+            Tweet.findOrCreate({ where: { id: tweet.id}, defaults: {
+                id_str: tweet.id_str,
+                created_at: tweet.created_at,
+                tweet_message: tweet.full_text }
+            })
+                // .then( ()=> console.log('tweet added'))
+                .catch(err => console.log(err))
+        });
     })
     .catch(err => console.error(`
             error: ${err.message}
@@ -75,4 +73,8 @@ const twitterPull = () => api.post('/oauth2/token', grantTypeCC, defaultOptions)
         
         `))
 
-module.exports = twitterPull;
+
+module.exports = {
+    authTwitter,
+    twitterPull
+}

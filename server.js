@@ -1,8 +1,12 @@
+//Dev - force load of local .env file
 require('dotenv').config()
+
 const path = require('path');
 const express = require('express');
 const db = require('./db');
 const { User } = db.models;
+
+const { authTwitter, twitterPull } = require('./utils/twitterPull');
 
 console.log('db in Server.js is: ', db)
 
@@ -26,4 +30,16 @@ app.use((err, req, res, next)=> {
 
 app.listen(port, ()=> console.log(`listening on port ${port}`));
 
-db.syncAndSeed();
+const startServer = async () => {
+  try {
+    await authTwitter()
+    await db.syncAndSeed()
+    await twitterPull()
+  }
+  catch (err) {
+    console.log('Server did not start ', err)
+  }
+}
+
+startServer();
+
