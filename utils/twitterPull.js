@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+
 const Tweet = require('../db/Tweet');
 const btoa = require('btoa');
 const axios = require('axios');
@@ -40,7 +42,6 @@ const authTwitter = () => api.post('/oauth2/token', grantTypeCC, defaultOptions)
         })
     .catch(err => console.log(`
         error: ${err.message}
-
     `))
 
 const twitterPull = () => api.get(API_URL)
@@ -66,12 +67,31 @@ const twitterPull = () => api.get(API_URL)
         });
     })
     .catch(err => console.error(`
+            twitterPull failed
             error: ${err.message}
             error message: ${err.response.data.errors ? err.response.data.errors[0].message : 'undefinded'}
             error status: ${err.response.status}
             
         
         `))
+    
+
+
+const dateNow = new Date();
+dateNow.setHours(0,0,0,0);
+
+console.log('twitterPull dateObject: ', dateNow)
+console.log("2) "+  new Date().toISOString());
+
+const todayTweetParams = {
+    where: {
+        created_at: {
+            [Op.gte]: dateNow
+        }
+    }
+}
+
+Tweet.calcTweets(todayTweetParams);
 
 
 module.exports = {

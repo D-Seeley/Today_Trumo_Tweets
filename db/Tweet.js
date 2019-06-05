@@ -20,8 +20,10 @@ const Tweet = conn.define('Tweet', {
   }
 });
 
-console.log('Tweets in Tweets.js is: ', Tweet);
+Tweet.calcTweets = (params) => {
+  return Tweet.findAndCountAll(params)
+      .then( ({ count }) => console.log('Trump Has Tweeted - calcTweets in twitterPull is: ', count));
+}
+
 
 module.exports = Tweet;
-
-// 

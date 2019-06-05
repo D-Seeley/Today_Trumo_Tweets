@@ -8,8 +8,6 @@ const { User } = db.models;
 
 const { authTwitter, twitterPull } = require('./utils/twitterPull');
 
-console.log('db in Server.js is: ', db)
-
 const app = express();
 app.use(require('body-parser').json());
 
@@ -32,6 +30,7 @@ app.listen(port, ()=> console.log(`listening on port ${port}`));
 
 const startServer = async () => {
   try {
+    //Note - not sure if await is working the way I think here, is my authTwitter func a promise...?
     await authTwitter()
     await db.syncAndSeed()
     await twitterPull()
