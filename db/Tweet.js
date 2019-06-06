@@ -20,9 +20,9 @@ const Tweet = conn.define('Tweet', {
   }
 });
 
-Tweet.calcTweets = (params) => {
+Tweet.calcTweets = async (params) => {
   return Tweet.findAndCountAll(params)
-      .then( ({ count }) => console.log('Trump Has Tweeted - calcTweets in twitterPull is: ', count));
+      .then( ({ count }) => count);
 }
 
 

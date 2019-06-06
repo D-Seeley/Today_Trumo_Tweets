@@ -2,11 +2,9 @@ const conn = require('./conn');
 const Tweet = require('./Tweet');
 const { twitterPull } = require('../utils/twitterPull');
 
-console.log('Tweets in index are: ', Tweet)
-
-const syncAndSeed = ()=> {
+const sync = () => {
   return conn.sync({ force: false})
-    .then(()=> twitterPull());
+    // .then(()=> twitterPull());
         // .then(tweets => {
         //   console.log('tweets pulled')
         // })
@@ -16,5 +14,5 @@ module.exports = {
   models: {
     Tweet
   },
-  syncAndSeed
+  sync
 };

@@ -7,8 +7,7 @@ const querystring = require('querystring');
 
 const ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN;
 const ACCESS_TOKEN_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET;
-const API_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&tweet_mode=extended&count=100';
-
+const API_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&tweet_mode=extended&count=10';
 
 const tokenEncoded = encodeURIComponent(ACCESS_TOKEN);
 const secretEncoded = encodeURIComponent(ACCESS_TOKEN_SECRET);
@@ -20,17 +19,15 @@ const defaultOptions = {
   baseURL: 'https://api.twitter.com/',
   headers: {
       Authorization: `Basic ${consumerKey}`
-    },
+    }
 }
 
 // Create instance
 const api = axios.create();
-// const apiAuthorized = axios.create(trumpTweets);
 
 const grantTypeCC = querystring.stringify({
     grant_type: 'client_credentials'
   });
-
 
 const authTwitter = () => api.post('/oauth2/token', grantTypeCC, defaultOptions)
     .then(response => response.data)
@@ -75,13 +72,11 @@ const twitterPull = () => api.get(API_URL)
         
         `))
     
-
-
 const dateNow = new Date();
-dateNow.setHours(0,0,0,0);
+dateNow.setHours(-4,0,0,0);
 
 console.log('twitterPull dateObject: ', dateNow)
-console.log("2) "+  new Date().toISOString());
+// console.log("2) "+  new Date().toISOString());
 
 const todayTweetParams = {
     where: {
@@ -92,7 +87,6 @@ const todayTweetParams = {
 }
 
 Tweet.calcTweets(todayTweetParams);
-
 
 module.exports = {
     authTwitter,
